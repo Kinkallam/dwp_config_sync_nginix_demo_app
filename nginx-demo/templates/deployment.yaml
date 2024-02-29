@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    {{- include "nginx-demo.labels" . | nindent 4 }}
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+  {{- if (eq .Values.hpa.enabled false) }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end}}
+  selector:
+    matchLabels:
+      {{- include "nginx-demo.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "nginx-demo.selectorLabels" . | nindent 8 }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ include "nginx-demo.serviceAccountName" . }}
+      automountServiceAccountToken: {{ .Values.serviceAccount.automountToken }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+{{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+{{- toYaml .Values.readinessProbe | nindent 12 }}
+          lifecycle:
+{{- toYaml .Values.lifecycle | nindent 12 }}
+          resources:
+{{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            # runAsUser: 10000
+            # runAsGroup: 20000
+            capabilities:
+              drop: ["ALL"]
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: false
+      terminationGracePeriodSeconds: 100
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{- toYaml . | nindent 8 }}
+    {{- end }}

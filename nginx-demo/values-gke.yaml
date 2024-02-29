@@ -1,0 +1,76 @@
+# Default values for Windows Demo App.
+
+replicaCount: 1
+
+image:
+  pullPolicy: IfNotPresent
+  repository: europe-west2-docker.pkg.dev/dwptst-dev-gke-0/dwp-registry/dwp-demo-nginx-rootuser
+  tag: v1
+
+imagePullSecrets:
+
+serviceAccount:
+  create: false
+  # The name of the service account to use. If not set and create is true, a name is generated using the fullname template
+  name: deafult
+  automountToken: false
+
+environment: dev
+
+livenessProbe:
+  httpGet:
+    path: /
+    port: http
+  periodSeconds: 4
+  timeoutSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /
+    port: http
+  timeoutSeconds: 30
+
+lifecycle:
+  preStop:
+    exec:
+      command: ["sleep","90"]  
+
+    resources:
+      limits:
+        cpu: 50m
+        memory: 128Mi
+      requests:
+        cpu: 25m
+        memory: 64Mi
+
+service:
+  type: ClusterIP
+  port: 8080
+
+hpa:
+  enabled: false
+  maxReplicas: 2
+  # average total CPU usage per pod (1-100)
+  cpu: 90
+  # average memory usage per pod (1-100)
+  memory: 90
+
+ingress:
+  enabled: false
+  hosts:
+    - nginx-demo.local
+
+podSecurityPolicy:
+  enabled: false
+
+nodeSelector: 
+  kubernetes.io/os: linux
+
+tolerations: []
+
+affinity: {}
+
+imageautomation:
+  enabled: false
+  path: ./dev-eks-cluster/nginx-demo.yaml

@@ -1,0 +1,23 @@
+{{- if (eq .Values.imageautomation.enabled true) -}}
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageRepository
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  interval: 5m
+  image: {{ .Values.image.repository }}
+---
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImagePolicy
+metadata:
+  name: {{ .Release.Name }}
+spec:
+  imageRepositoryRef:
+    name: {{ .Release.Name }}
+  filterTags:
+    pattern: ^main-[a-fA-F0-9]+-(?P<ts>.*)
+    extract: "$ts"
+  policy:
+    numerical:
+      order: asc
+{{- end }}

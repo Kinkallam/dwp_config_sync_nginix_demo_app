@@ -1,0 +1,16 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: allow-ingress-{{ .Release.Name }}
+  labels:
+    {{- include "nginx-demo.labels" . | nindent 4 }}
+spec:
+  podSelector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "nginx-demo.name" . }}
+  ingress:
+    - ports:
+      - protocol: TCP
+        port: {{ .Values.service.port }}
+  policyTypes:
+  - Ingress

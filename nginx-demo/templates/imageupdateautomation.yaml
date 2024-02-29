@@ -1,0 +1,44 @@
+{{- if (eq .Values.imageautomation.enabled true) -}}
+apiVersion: image.toolkit.fluxcd.io/v1beta1
+kind: ImageUpdateAutomation
+metadata:
+  name: ecr-update-automation
+  namespace: {{ .Release.Namespace }}
+spec:
+  interval: 5m
+  sourceRef:
+    kind: GitRepository
+    name: flux-tenant-hcs
+    namespace: flux-system
+  git:
+    checkout:
+      ref:
+        branch: master
+    commit:
+      messageTemplate: |
+        Automated image update
+
+        Automation name: {{ printf "{{ .AutomationObject }}" }}
+        Files:
+        {{ printf "{{ range $filename, $_ := .Updated.Files -}}" }}
+        - {{ printf "{{ $filename }}" }}
+        {{ printf "{{ end -}}" }}
+
+        Objects:
+        {{ printf "{{ range $resource, $_ := .Updated.Objects -}}" }}
+        - {{ printf "{{ $resource.Kind }} {{ $resource.Name }}" }}
+        {{ printf "{{ end -}}" }}
+
+        Images:
+        {{ printf "{{ range .Updated.Images -}}" }}
+        - {{ printf "{{.}}" }}
+        {{ printf "{{ end -}}" }}
+      author:
+        name: flux
+        email: flux.digital.dwp.gov.uk
+    push:
+      branch: master
+  update:
+    path: {{ .Values.imageautomation.path }} ## This is the path to the directory in the gitrepository that you want to monitor for changes
+    strategy: Setters
+{{- end }}
