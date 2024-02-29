@@ -62,7 +62,6 @@ $ helm install charts/nginx-demo --name nginx-demo -f values.yaml
 ```
 
 > **Tip**: You can use the default [values.yaml](values.yaml)
-```
 
 # Helm Chart Deployment Guide
 
