@@ -97,7 +97,7 @@ After connecting to the GKE cluster, run the Helm install command to deploy the 
 helm install nginx-test-gke ./ -f values-gke.yaml
 ```
 
-**EKS Deployment:**
+### **EKS Deployment:**
 
 For deploying to the attached EKS cluster, use the values-eks.yaml file to configure the Helm chart. This file contains EKS-specific configurations.
 
