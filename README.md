@@ -79,21 +79,26 @@ This repository contains a Helm chart for deploying [Your Application] to Kubern
 
 ## Configuration
 
-GKE Deployment
+## GKE Deployment
+
 For deploying to GKE, use the values-gke.yaml file to configure the Helm chart. This file contains GKE-specific configurations.
 
 Before deploying to GKE, ensure that you have access to the GKE cluster. Since the GKE cluster is private, a VM has been created in the same network (dwptst-dev-net-spoke-0 project). SSH into the VM, and all the prerequisites are available there.
 
-Connect to the GKE cluster using the following command:
+### Connect to the GKE cluster using the following command:
 
 
-```gcloud container clusters get-credentials dev-gke-ew2-0 --zone=europe-west2-c --project=dwptst-dev-gke-0```
+```console
+gcloud container clusters get-credentials dev-gke-ew2-0 --zone=europe-west2-c --project=dwptst-dev-gke-0
+```
 
 After connecting to the GKE cluster, run the Helm install command to deploy the chart with the values-gke.yaml file:
 
-```helm install nginx-test-gke ./ -f values-gke.yaml```
+```markdown
+helm install nginx-test-gke ./ -f values-gke.yaml
+```
 
-EKS Deployment:
+**EKS Deployment:**
 
 For deploying to the attached EKS cluster, use the values-eks.yaml file to configure the Helm chart. This file contains EKS-specific configurations.
 
@@ -101,10 +106,14 @@ To connect to the attached EKS cluster, follow these steps:
 
 Connect to the EKS cluster from your local machine.
 
-```gcloud container fleet memberships get-credentials cmod-ff-test-eks-cluster-01 --project dwptst-dev-gke-0```
+```console
+gcloud container fleet memberships get-credentials cmod-ff-test-eks-cluster-01 --project dwptst-dev-gke-0
+```
 
 Run the Helm install command to deploy the chart with the values-eks.yaml file:
 
-```helm install nginx-test-eks ./ -f values-eks.yaml```
+```markdown
+helm install nginx-test-eks ./ -f values-eks.yaml
+```
 
-Note: For EKS deployment, a Kubernetes secret(registry-secret) is used to pull the image from the private registry. This secret is created with the service account key.
+> **Note**: For EKS deployment, a Kubernetes secret(registry-secret) is used to pull the image from the private registry. This secret is created with the service account key.
